@@ -8,13 +8,14 @@ type FriendUser = {
 
 type FriendProps = {
     friend: FriendUser
+    onClick: () => void
 }
 
-export function Friend({ friend }: FriendProps) {
+export function Friend({ friend, onClick }: FriendProps) {
 
 
     return (
-        <section key={friend.id} className='friend_container'>
+        <section onClick={onClick} key={friend.id} className='friend_container'>
             <div className='container_img_friend'>
                 <div className="img_friend_border">
                     <img className='img_friend' src={`${process.env.PUBLIC_URL}/logo192.png`} alt="img" />

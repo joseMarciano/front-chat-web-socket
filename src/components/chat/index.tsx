@@ -5,6 +5,7 @@ import { MenuOutlined, UserAddOutlined, MessageFilled } from '@ant-design/icons'
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axiosInstance from '../../config/axios';
+import { Conversation } from './Conversation';
 const { Sider, Content } = Layout;
 
 type User = {
@@ -21,17 +22,18 @@ export function Chat() {
     const [friends, setFriends] = useState<User[]>([]);
     const [friendEmail, setFriendEmail] = useState('');
     const [showAlert, setShowAlert] = useState(false);
+    const [currentFriend, setCurrentFriend] = useState<User>();
 
     const { id } = useParams();
 
     useEffect(() => {
         getUserById(id as string)
-        .then((data) => {
-            data.friends.forEach((friend) => getUserById(friend).then((user) => {
-                friends.push(user)
-                setFriends([...friends])
-            }));
-        });
+            .then((data) => {
+                data.friends.forEach((friend) => getUserById(friend).then((user) => {
+                    friends.push(user)
+                    setFriends([...friends])
+                }));
+            });
     }, [])
 
 
@@ -47,12 +49,12 @@ export function Chat() {
         setIsLoading(true)
         const friend = await getUserByEmail(friendEmail)
 
-        if(friend) {
+        if (friend) {
             setIsLoading(false)
             setOpenModal(false)
             setFriendEmail('')
             setShowAlert(false)
-            
+
             await addFriendUSer(friend)
 
         } else {
@@ -79,9 +81,11 @@ export function Chat() {
     }
 
     async function getUserByEmail(email: string): Promise<User> {
-        return axiosInstance.get(`/user/email`,{params: {
-            email: email
-        }})
+        return axiosInstance.get(`/user/email`, {
+            params: {
+                email: email
+            }
+        })
             .then(({ data }) => {
                 debugger
                 return data
@@ -101,12 +105,12 @@ export function Chat() {
                     </header>
 
                     <div className='container_friend_wrapper'>
-                        {friends.map((friend) => <Friend key={friend.id} friend={friend} />)}
+                        {friends.map((friend) => <Friend key={friend.id} friend={friend} onClick={() => setCurrentFriend(friend)} />)}
                     </div>
 
                 </Sider>
                 <Content>
-
+                    <Conversation friend={currentFriend} />
                 </Content>
             </Layout>
         </div>
@@ -118,8 +122,8 @@ export function Chat() {
             confirmLoading={isLoading}
             onCancel={closeModalFriend}
         >
-                {showAlert && <Alert message="Email de amigo não encontrado" type="error" style={{marginBottom: 20}} />}
-            <Input size="large" placeholder="put friend's email" prefix={<MessageFilled />} onChange={(e) => setFriendEmail(e.target.value)}/>
+            {showAlert && <Alert message="Email de amigo não encontrado" type="error" style={{ marginBottom: 20 }} />}
+            <Input size="large" placeholder="put friend's email" prefix={<MessageFilled />} onChange={(e) => setFriendEmail(e.target.value)} />
         </Modal>
     </>
     )

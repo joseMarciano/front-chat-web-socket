@@ -1,0 +1,42 @@
+
+.wrapper_layout {
+    min-height: 100vh;
+    min-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container_chat {
+    max-width: 80%;
+    margin: 0 auto;
+    height: 80vh;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.ant-layout-sider-children{
+    background-color:  rgb(221, 217, 217);
+}
+
+.header_chat {
+    font-size: 1.275rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.header_chat span:nth-child(1) {
+    margin-left: 0.75rem;
+}
+.header_chat span:nth-child(2) {
+    flex: 1;
+    text-align: center;
+}
+
+.container_friend_wrapper {
+    overflow-y: auto;
+    max-height: 550px;
+}
+

@@ -17,8 +17,10 @@ export function Home() {
     const onFinish = (fields: FormFields) => {
         setIsLoading(true)
         httpClient.post('user', fields)
-        .then(() => navigate('/chat'))
-        .finally(() => setIsLoading(false))
+            .then((user) => {
+                navigate(`/chat/${user.data.id}`)
+            })
+            .finally(() => setIsLoading(false))
     }
 
     const onFinishFailed = (errorInfo: any) => {

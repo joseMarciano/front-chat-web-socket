@@ -1,4 +1,5 @@
 import './style.css'
+import { sockClient } from '../../config/SockJS';
 import { Friend } from './Friend';
 import { Layout, Modal, Input, Alert } from "antd";
 import { MenuOutlined, UserAddOutlined, MessageFilled } from '@ant-design/icons';
@@ -6,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axiosInstance from '../../config/axios';
 import { Conversation } from './Conversation';
+import { AxiosResponse } from 'axios';
 const { Sider, Content } = Layout;
 
 type User = {
@@ -15,23 +17,39 @@ type User = {
     friends: string[],
 }
 
+type Message = {
+    id: string
+    from: string
+    to: string
+    content: string
+    date: Date
+    status: string
+}
+
 export function Chat() {
-    const [user, setUser] = useState<User>();
+    let [user, setUser] = useState<User>();
     const [modalIsOpen, setOpenModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [friends, setFriends] = useState<User[]>([]);
     const [friendEmail, setFriendEmail] = useState('');
     const [showAlert, setShowAlert] = useState(false);
     const [currentFriend, setCurrentFriend] = useState<User>();
+    const [messages, setMessages] = useState<Message[]>([])
 
     const { id } = useParams();
 
     useEffect(() => {
         getUserById(id as string)
+            .then(({ data }) => {
+                user = data as any
+                setUser(data)
+                return data
+            })
             .then((data) => {
-                data.friends.forEach((friend) => getUserById(friend).then((user) => {
-                    friends.push(user)
+                data.friends.forEach((friend: string) => getUserById(friend).then(({ data }) => {
+                    friends.push(data)
                     setFriends([...friends])
+                    subscribeToReceiveMessages(data.id)
                 }));
             });
     }, [])
@@ -63,12 +81,19 @@ export function Chat() {
         }
     }
 
-    function getUserById(id: string): Promise<User> {
-        return axiosInstance.get(`/user/${id}`)
-            .then(({ data }) => {
-                setUser(data)
-                return data
-            })
+    function getUserById(id: string): Promise<AxiosResponse> {
+        return axiosInstance.get(`/user/${id}`);
+    }
+
+    function subscribeToReceiveMessages(friendId: string) {
+        sockClient.subscribe(`/user/${user?.id}${friendId}/private`, (message) => {
+            const messageReceived = JSON.parse(message?.body || '') as Message;
+
+            messages.push(messageReceived)
+            setMessages([...messages])
+        
+
+        })
     }
 
     async function addFriendUSer(friend: User): Promise<User> {
@@ -86,10 +111,7 @@ export function Chat() {
                 email: email
             }
         })
-            .then(({ data }) => {
-                debugger
-                return data
-            })
+            .then(({ data }) => data)
     }
 
     return (<>
@@ -110,7 +132,7 @@ export function Chat() {
 
                 </Sider>
                 <Content>
-                    <Conversation friend={currentFriend} />
+                    <Conversation setMessages={setMessages} friend={currentFriend} user={user} messages={messages}/>
                 </Content>
             </Layout>
         </div>

@@ -1,23 +1,10 @@
 import { Button, Input } from 'antd'
 import { useState } from 'react'
-import { sockClient } from '../../../config/SockJS'
+import { SockJs } from '../../../config/SockJS'
+import { useChatContext } from '../Context'
 
 import './style.css'
 
-
-type Friend = {
-    id: string,
-    name: string,
-    email: string,
-    friends: string[],
-}
-
-type User = {
-    id: string,
-    name: string,
-    email: string,
-    friends: string[],
-}
 
 type Message = {
     id: string
@@ -28,47 +15,57 @@ type Message = {
     status: string
 }
 
-type ConversationProps = {
-    friend?: Friend,
-    user?: User
-    messages?: Message[]
-    setMessages: (messages: Message[]) => void
-}
 
-
-export function Conversation({ friend, user, messages, setMessages }: ConversationProps) {
+export function Conversation() {
+    const sockClient = SockJs.getInstance()
     const [message, setMessage] = useState('');
-    if (!friend || !user) return <></>
+    const { setMessages, messages, user, currentFriend } = useChatContext();
 
+    if (!currentFriend || !user) return <></>
 
+    const formatDate = (date?: Date): string => {
+        if(!date) return '';
 
+        return new Intl.DateTimeFormat('pt-br', {
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(new Date(date))
+    }
 
     const sendMessageToFriend = () => {
-        
+
         const body = {
             content: message,
             from: user.id,
-            to: friend.id
+            to: currentFriend.id
         }
         sockClient.send('/app/send-message', { body })
         messages?.push(body as Message)
 
-        setMessages([...messages as any] )
+        setMessages([...messages as any])
+
+        setMessage('');
     }
 
     return (
         <>
             <header className='header_conversation'>
-                {friend.name}
+                {`From: ${user.name} | To: ${currentFriend.name}`}
             </header>
-            <div className='content_conversation'>
-                { messages?.map((m, index) =>(
-                    <span key={index} className={user.id === m.from ? 'self': ''}>
-                        {m.content}
-                    </span>
-                ))}
+            <div className='content_conversation_wrapper'>
+                <div className='content_conversation'>
+                    {messages.map((m, index) => (
+                        <span key={index} className={user.id === m.from ? 'container_conversation self' : 'container_conversation'}>
+                            <p>
+                                {m.content}
+                            </p>
+                           <time>
+                               {formatDate(m.date)}
+                           </time>
+                        </span>
+                    ))}
+                </div>
             </div>
-
             <div className='input_conversation'>
                 <Input style={{ width: 'calc(100% - 200px)' }} value={message} onChange={(e) => setMessage(e.target.value)} />
                 <Button type="primary" onClick={sendMessageToFriend}>Send</Button>

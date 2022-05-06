@@ -1,14 +1,22 @@
 import SockJS from 'sockjs-client';
 import { Client, Frame, Message, over } from 'stompjs';
 
-class SockJs {
+export class SockJs {
+    private static instance: SockJs
     private stompClient = null as unknown as Client;
     private subscriptionInsertedWhileDisconnected: any[] = [];
     private sockJs: any
 
-    constructor() {
+    private constructor() {
         this.connect();
+    }
 
+    static getInstance() {
+        if (!SockJs.instance) {
+            SockJs.instance = new SockJs()
+        }
+
+        return SockJs.instance
     }
 
     private connect(): void {
@@ -21,14 +29,16 @@ class SockJs {
         }
     }
 
-    public subscribe(destinationn: string, cb: (message?: Message) => any) {
+    public subscribe(destination: string, resolve: (message?: Message) => void): void {
         if (!this.stompClient || !this.stompClient.connected) {
             console.warn('WS is not connected!!')
-            this.subscriptionInsertedWhileDisconnected.push({ destination: destinationn, cb: cb })
+            this.subscriptionInsertedWhileDisconnected.push({ destination: destination, resolve })
             return;
         }
 
-        this.stompClient.subscribe(destinationn, cb)
+
+        this.stompSubscribe(destination, resolve)
+
     }
 
     public send(destination: string, { body }: { body: any }) {
@@ -41,8 +51,14 @@ class SockJs {
     }
 
 
+
+    private stompSubscribe(destination: string, resolve: (message?: Message) => void) {
+        this.stompClient.subscribe(destination, (message) => resolve(message))
+    }
+
+
     private onConnected(frame?: Frame): void {
-        this.subscriptionInsertedWhileDisconnected.forEach(({ destination, cb }) => this.subscribe(destination, cb))
+        this.subscriptionInsertedWhileDisconnected.forEach(({ destination, resolve }) => this.stompSubscribe(destination, resolve))
         this.subscriptionInsertedWhileDisconnected = [];
         console.log('Connected: ' + frame);
     }
@@ -61,6 +77,3 @@ class SockJs {
     }
 }
 
-const sockClient = new SockJs()
-
-export { sockClient }; 

@@ -32,3 +32,7 @@
 ![Badge](https://img.shields.io/badge/Spring_Boot--%236DB33F?style=for-the-badge&logo=SpringBoot&color=ffffff)
 ![Badge](https://img.shields.io/badge/MongoDb--%2347A248?style=for-the-badge&logo=MongoDb&color=ffffff)
 ![Badge](https://img.shields.io/badge/Amazon_SQS--%23232F3E?style=for-the-badge&logo=AmazonAWS&color=ffffff)
+
+
+[Check the front-end repository here :pencil2:](https://github.com/joseMarciano/front-chat-web-socket) 
+[Check the front-end repository here :robot:](https://github.com/joseMarciano/chat-web-socket) 

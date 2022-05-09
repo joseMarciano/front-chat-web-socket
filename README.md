@@ -13,7 +13,7 @@
     <img src="./diagram.png">
 </div>
 
-## :computer: Technologies
+
 
 ## :ballot_box_with_check: Progress of the project
 
@@ -23,7 +23,7 @@
 - [x] Add Friend to send Message
 - [ ] Send notification to Friend when User add Friend using Amazon SQS
  
-
+## :computer: Technologies
 ### :pencil2: Front-end:
 ![Badge](https://img.shields.io/badge/Typescript--%233178C6?style=for-the-badge&logo=Typescript&color=ffffff)
 ![Badge](https://img.shields.io/badge/React--%2361DAFB?style=for-the-badge&logo=React&color=ffffff)

@@ -17,11 +17,11 @@
 
 ## :ballot_box_with_check: Progress of the project
 
-[x] Save User in MongoDb
-[x] Save sent Message in MongoDb
-[x] Send Message on real time using Web Socket
-[x] Add Friend to send Message
-[] Send notification to Friend when User add Friend using Amazon SQS
+- [x] Save User in MongoDb
+- [x] Save sent Message in MongoDb
+- [x] Send Message on real time using Web Socket
+- [x] Add Friend to send Message
+- [ ] Send notification to Friend when User add Friend using Amazon SQS
  
 
 ### :pencil2: Front-end:

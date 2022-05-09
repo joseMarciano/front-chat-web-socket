@@ -9,7 +9,10 @@
 
 
 ## :wrench: Architecture fluxogram
-<img src="./diagram.png">
+<div style="background: white"> 
+    <img src="./diagram.png">
+</div>
+
 ## :computer: Technologies
 
 ## :ballot_box_with_check: Progress of the project

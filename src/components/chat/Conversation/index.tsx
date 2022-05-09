@@ -23,7 +23,7 @@ export function Conversation() {
 
     if (!currentFriend || !user) return <></>
 
-    const formatDate = (date?: Date): string => {
+    const formatDate = (date?: string): string => {
         if(!date) return '';
 
         return new Intl.DateTimeFormat('pt-br', {
@@ -37,6 +37,7 @@ export function Conversation() {
         const body = {
             content: message,
             from: user.id,
+            date: new Date(),
             to: currentFriend.id
         }
         sockClient.send('/app/send-message', { body })
@@ -60,7 +61,7 @@ export function Conversation() {
                                 {m.content}
                             </p>
                            <time>
-                               {formatDate(m.date)}
+                               {formatDate(m.date as unknown as string)}
                            </time>
                         </span>
                     ))}
